@@ -1,0 +1,12 @@
+package ru.filippov.springTree;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SpringTreeApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringTreeApplication.class, args);
+	}
+}

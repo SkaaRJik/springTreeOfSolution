@@ -1,0 +1,4 @@
+div#table-list-files table, th, td, caption{
+    border-collapse: collapse;
+    border: solid 1px black;
+}
