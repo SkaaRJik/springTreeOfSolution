@@ -19,6 +19,7 @@ public class Node implements Cloneable{
     private short countOfAttributes;
     float lastIG;
     short depth;
+    int totalNodes;
 
 
     public Node(){}
@@ -33,6 +34,7 @@ public class Node implements Cloneable{
         this.attributes.add(attributeName);
         this.children = new ArrayList<>();
         this.lastIG = -1;
+        this.totalNodes = 0;
     }
 
     @Override
@@ -57,6 +59,7 @@ public class Node implements Cloneable{
         clone.countOfAttributes = this.countOfAttributes;
         clone.lastIG = this.lastIG;
         clone.depth = this.depth;
+        clone.totalNodes = this.totalNodes;
         return clone;
     }
 
@@ -195,22 +198,18 @@ public class Node implements Cloneable{
             //Для головы
             if(this.parent == null && this.children.isEmpty() && this.equals(newNode)){
                 try {
-                        /*newNode.attributes = new ArrayList<>(this.countOfAttributes);
-                        newNode.attributes.add(newNode.attributeName);*/
 
                     Node copyNode = (Node) this.clone();
                     copyNode.parent = this;
-
                     this.level = 0;
                     copyNode.level = 1;
 
                     this.setDepth((short) 1);
                     this.label = "HEAD";
 
-                        /*copyNewNode.examples.add(copyNewNode.example);
-                        copyNode.examples.add(copyNode.example);*/
 
                     this.children.add(copyNode);
+                    this.totalNodes+=2;
                     return;
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
@@ -231,6 +230,7 @@ public class Node implements Cloneable{
                     copyNewNode.level = (short) (copyNewNode.parent.level+1);
                     this.setDepth(copyNewNode.level);
                     this.children.add(copyNewNode);
+                    this.totalNodes++;
                     return;
                 }
             }
@@ -256,6 +256,7 @@ public class Node implements Cloneable{
                     copyNewNode.level = (short) (copyNewNode.parent.level+1);
                     this.setDepth(copyNewNode.level);
                     node.children.add(copyNewNode);
+                    this.totalNodes++;
                     copyNewNode.addAttributesToParrents(copyNewNode.attributeName);
                     return;
                     //___________________________________________________________________________
@@ -267,6 +268,7 @@ public class Node implements Cloneable{
                 copyNewNode.level = (short) (node.level+1);
                 this.setDepth(copyNewNode.level);
                 node.children.add(copyNewNode);
+                this.totalNodes++;
                 copyNewNode.addAttributesToParrents(copyNewNode.attributeName);
 
             }
@@ -311,6 +313,7 @@ public class Node implements Cloneable{
         List<Node> parents = new ArrayList<>();
         getAllNodesOnLevel(depth-1, parents);
         for(Node parent : parents){
+            this.totalNodes -= parent.children.size();
             parent.deleteAttributeFromTree(nameOfLastLevel);
             parent.children = new ArrayList<>(parent.children.size());
         }
@@ -318,5 +321,9 @@ public class Node implements Cloneable{
 
     public String getAttributeName() {
         return attributeName;
+    }
+
+    public int getTotalNodes() {
+        return totalNodes;
     }
 }

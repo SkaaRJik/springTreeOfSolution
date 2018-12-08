@@ -10,18 +10,15 @@
             $.ajax({
                 url: '/build/status',
                 success: function (data) {
-                    $('#status').html(data);
-
-
+                    NProgress.set(data/100);
                     if(data == 100){
                         clearInterval(tread);
-                        NProgress.set(0.4);
+                        NProgress.done();
                     }
                 }
             });
         }
-    </script>
-    <script>
+
         $(document).ready(function () {
             NProgress.start();
             var tread = setInterval(frame, 10);
