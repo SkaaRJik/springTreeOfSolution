@@ -1,6 +1,9 @@
 package ru.filippov.springTree.treeOfSolution;
 
+import org.springframework.stereotype.Service;
+
 import java.util.*;
+
 
 public class Node implements Cloneable{
     private Node parent;
@@ -18,7 +21,7 @@ public class Node implements Cloneable{
     short depth;
 
 
-
+    public Node(){}
     public Node(String attributeName, String label, int example, short countOfAttributes) {
         this.attributeName = attributeName;
         this.label = label;

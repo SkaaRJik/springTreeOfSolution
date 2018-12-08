@@ -23,24 +23,24 @@ public class AjaxController {
     public  String readFile(@RequestParam String fileName) throws IOException {
 
         String[][] table = DataFactory.readUsingFileReader(new File(uploadPath+"/"+fileName), StandardCharsets.UTF_8);
-        String result = "";
-        for(String[] row : table){
-            for(String column : row){
-                result =  result + column + " ";
-            }
-            result+="<br>";
-        }
 
+        //String result = "<button id='build'>Построить</button>";
+        String result = "<form action=\"/build?fileName="+fileName+"\">\n" +
+                "<input type=\"submit\" value=\"Построить\">\n" +
+                "</form>";
+        result += "<table>\n";
+
+        for(String[] row : table){
+            result+="\t<tr>\n";
+            for(String column : row){
+                result =  result + "<td>" + column + "</td>";
+            }
+            result+="\t</tr>\n";
+
+        }
+        result+="</table>";
         return result;
 
     }
 
-    @RequestMapping(value = "/load", method = RequestMethod.GET, produces = {"text/html; charset=UTF-8"})
-    public @ResponseBody String laod(){
-
-
-
-        return "SUCCESS";
-
-    }
 }

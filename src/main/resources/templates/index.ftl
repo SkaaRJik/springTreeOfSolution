@@ -7,24 +7,16 @@
     </form>
     <#if message??><div>${message}</div></#if>
     <#if files??>
-    <script>
-        $(document).ready(function(){
-            $('input[name="select-file"]:radio').change(function(){
 
-                readFileAjax();
-            });
-        });
-    </script>
-    </script>
     <div id="table-list-files">
-            <table>
+        <table>
             <caption><b>Список входных данных:</b></caption>
-    <thead>
-    <tr>
-    <th>Выбор</th> <th>Имя файла</th>
-                </tr>
+            <thead>
+            <tr>
+                <th>Выбор</th> <th>Имя файла</th>
+            </tr>
             </thead>
-            <tbody>
+        <tbody>
     </#if>
 
 
@@ -38,9 +30,38 @@
             </tbody>
         </table>
     </div>
+    <button id="buildTree">Построить!!!!</button>
     <div>
         <div id="readedFile"></div>
-            </div>
+    </div>
+    <script type="text/javascript">
+        function readFileAjax(){
+            var radio = $('input[name=select-file]:checked').val();
+            $.ajax({
+                url: '/loadFile',
+                data: ({fileName : radio}),
+                success: function (data) {
+                    $('#readedFile').html(data);
+                }
+            });
+        };
+
+        function goToBuild(){
+            var href = "/build?fileName="
+            href += $('input[name=select-file]:checked').val();
+            window.location.replace(href);
+        };
+
+        $(document).ready(function(){
+            $('input[name="select-file"]:radio').change(function(){
+                readFileAjax();
+            });
+            $("#buildTree").click(function(){
+                goToBuild();
+            });
+        });
+    </script>
+
 
     </#if>
 

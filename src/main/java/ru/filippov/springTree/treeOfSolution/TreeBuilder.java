@@ -2,16 +2,29 @@ package ru.filippov.springTree.treeOfSolution;
 
 
 
+import org.springframework.stereotype.Service;
 import ru.filippov.springTree.utils.DataFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TreeBuilder {
+
+public class TreeBuilder extends Thread{
+    int status = 0;
+
+
+
 
     Node tree;
+    String[][] data;
+    private float statusIncrementor = -1;
 
     public TreeBuilder() {
+        this.tree = null;
+    }
+    public TreeBuilder(String[][] data) {
+        this.data = data;
+        statusIncrementor = 100.0f / ((this.data[0].length * (this.data[0].length-1) + calculateFactorial(this.data[0].length-2)));
         this.tree = null;
     }
 
@@ -19,7 +32,21 @@ public class TreeBuilder {
         return tree;
     }
 
-    public void run(String[][] data) {
+    void updateStatus(){
+        this.status += statusIncrementor;
+    }
+
+    private int calculateFactorial(int n){
+        int result = 1;
+        for (int i = 1; i <=n; i ++){
+            result = result*i;
+        }
+        return result;
+    }
+
+
+    @Override
+    public void run() {
         Node[][] nodes = DataFactory.convertDataToNode(data);
         short countOfAttributes = (short) data[0].length;
         int countOfTrees = countOfAttributes * (countOfAttributes - 1);
@@ -39,10 +66,14 @@ public class TreeBuilder {
                 for (int i = 0; i < nodes.length; i++) {
                     if (currentTree == null) currentTree = (Node) nodes[i][firstIndex].clone();
                     currentTree.push(nodes[i][firstIndex]);
+
                 }
+
                 for (int i = 0; i < nodes.length; i++) {
                     currentTree.push(nodes[i][secondIndex]);
+
                 }
+
                 if (this.tree == null) {
                     this.tree = currentTree;
                     this.tree.getIGOfLastAdding();
@@ -58,6 +89,7 @@ public class TreeBuilder {
                 currentTree = null;
                 secondIndex++;
                 if (firstIndex == secondIndex) secondIndex++;
+                updateStatus();
 
             }
             List<Short> allowedColumns = new ArrayList<>(nodes[0].length);
@@ -81,7 +113,9 @@ public class TreeBuilder {
                 for (Short column: allowedColumns) {
                     for (int i = 0; i < nodes.length; i++) {
                         currentTree.push(nodes[i][column]);
+
                     }
+                    updateStatus();
                     if(secondStage) {
                         this.tree = (Node) currentTree.clone();
                         this.tree.getIGOfLastAdding();
@@ -103,7 +137,7 @@ public class TreeBuilder {
                 allowedColumns.remove(new Short(bestColumn2));
             }
 
-            int a = 0;
+            this.status = 100;
         } catch(CloneNotSupportedException ex){
             System.out.println("Произошла ошибка в методе TreeBuilder.run");
         ex.printStackTrace();
@@ -111,4 +145,7 @@ public class TreeBuilder {
         }
 }
 
+    public float getStatus() {
+        return status;
+    }
 }
