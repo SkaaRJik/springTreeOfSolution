@@ -17,9 +17,11 @@ public class Node implements Cloneable{
     private float E0;
     private float E;
     private short countOfAttributes;
-    float lastIG;
-    short depth;
-    int totalNodes;
+    private float lastIG;
+    private short depth;
+    private int totalNodes;
+    private int id;
+    private int lastID;
 
 
     public Node(){}
@@ -35,6 +37,8 @@ public class Node implements Cloneable{
         this.children = new ArrayList<>();
         this.lastIG = -1;
         this.totalNodes = 0;
+        this.lastID = 0;
+        this.id = 0;
     }
 
     @Override
@@ -45,6 +49,8 @@ public class Node implements Cloneable{
         clone.label = this.label;
         clone.attributes = new HashSet<>(this.attributes);
         clone.attributeName = this.attributeName;
+        clone.id = this.id;
+        clone.lastID = this.lastID;
         if(!this.children.isEmpty()){
             ArrayList<Node> copiesOfChildren = new ArrayList<>();
             for(Node child: children){
@@ -70,6 +76,7 @@ public class Node implements Cloneable{
         clone.label = this.label;
         clone.attributes = new HashSet<>(this.attributes);
         clone.attributeName = this.attributeName;
+        clone.id = this.id;
         if(!this.children.isEmpty()){
             ArrayList<Node> copiesOfChildren = new ArrayList<>();
             for(Node child: children){
@@ -85,44 +92,6 @@ public class Node implements Cloneable{
         clone.lastIG = this.lastIG;
         clone.depth = this.depth;
         return clone;
-    }
-
-
-    public float calculateIGToKnowBestTreeToStart() {
-        if (this.lastIG != -1) {
-            return this.lastIG;
-        }
-
-        this.lastIG = 0;
-
-        if (this.attributes.size() == 2) {
-            E0 = 0;
-            float p;
-            for (Node child : children) {
-                p = (float) child.examples.size() / this.examples.size();
-                E0 += (Math.log10(p) * p);
-            }
-            E0 *= -1;
-            for (Node child : children) {
-                child.E = 0;
-                if (child.children.size() == 1) {
-                    continue;
-                } else {
-                    for (Node postChild : child.children) {
-                        p = (float) postChild.examples.size() / child.examples.size();
-                        child.E += Math.log10(p) * p;
-                    }
-                    child.E *= -1;
-                }
-            }
-            for (Node child : children) {
-                this.lastIG += child.E * (float) child.examples.size() / this.examples.size();
-            }
-
-        }
-        this.lastIG = E0 - this.lastIG;
-
-        return this.lastIG;
     }
 
     void getAllNodesOnLevel(int level, List<Node> nodes){
@@ -203,11 +172,11 @@ public class Node implements Cloneable{
                     copyNode.parent = this;
                     this.level = 0;
                     copyNode.level = 1;
-
+                    this.id = this.lastID++;
                     this.setDepth((short) 1);
                     this.label = "HEAD";
 
-
+                    copyNode.id = this.lastID++;
                     this.children.add(copyNode);
                     this.totalNodes+=2;
                     return;
@@ -230,6 +199,7 @@ public class Node implements Cloneable{
                     copyNewNode.level = (short) (copyNewNode.parent.level+1);
                     this.setDepth(copyNewNode.level);
                     this.children.add(copyNewNode);
+                    copyNewNode.id = this.lastID++;
                     this.totalNodes++;
                     return;
                 }
@@ -256,6 +226,7 @@ public class Node implements Cloneable{
                     copyNewNode.level = (short) (copyNewNode.parent.level+1);
                     this.setDepth(copyNewNode.level);
                     node.children.add(copyNewNode);
+                    copyNewNode.id = this.lastID++;
                     this.totalNodes++;
                     copyNewNode.addAttributesToParrents(copyNewNode.attributeName);
                     return;
@@ -268,6 +239,7 @@ public class Node implements Cloneable{
                 copyNewNode.level = (short) (node.level+1);
                 this.setDepth(copyNewNode.level);
                 node.children.add(copyNewNode);
+                copyNewNode.id = this.lastID++;
                 this.totalNodes++;
                 copyNewNode.addAttributesToParrents(copyNewNode.attributeName);
 
@@ -314,6 +286,7 @@ public class Node implements Cloneable{
         getAllNodesOnLevel(depth-1, parents);
         for(Node parent : parents){
             this.totalNodes -= parent.children.size();
+            this.lastID -= parent.children.size();
             parent.deleteAttributeFromTree(nameOfLastLevel);
             parent.children = new ArrayList<>(parent.children.size());
         }
@@ -323,7 +296,42 @@ public class Node implements Cloneable{
         return attributeName;
     }
 
-    public int getTotalNodes() {
-        return totalNodes;
+    private void putChildrenToAdjacencyMatrix(Node parent, Node[][] matrix){
+        if(!parent.children.isEmpty()){
+            for (Node child: parent.children) {
+                matrix[parent.id][child.id] = child;
+                //matrix[child.id][parent.id] = parent;
+                matrix[child.id][child.id] = parent;
+                putChildrenToAdjacencyMatrix(child, matrix);
+            }
+        }
+
+    }
+
+    public Node[][] convertTreeToAdjacencyMatrix(){
+        Node[][] matrix = new Node[this.totalNodes][this.totalNodes];
+        this.putChildrenToAdjacencyMatrix(this, matrix);
+        return matrix;
+    }
+
+
+    public String getLabel() {
+        return label;
+    }
+
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public Set<Integer> getExamples() {
+        return examples;
+    }
+
+    public short getLevel() {
+        return level;
+    }
+
+    public int getID() {
+        return this.id;
     }
 }

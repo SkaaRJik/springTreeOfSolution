@@ -1,4 +1,16 @@
+body {
+    margin: 0;
+}
+#container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+
 div#table-list-files table, th, td, caption{
     border-collapse: collapse;
     border: solid 1px black;
 }
+

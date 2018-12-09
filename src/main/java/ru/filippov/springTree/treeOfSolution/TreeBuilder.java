@@ -136,7 +136,6 @@ public class TreeBuilder extends Thread{
                 }
                 allowedColumns.remove(new Short(bestColumn2));
             }
-
             this.status = 100;
         } catch(CloneNotSupportedException ex){
             System.out.println("Произошла ошибка в методе TreeBuilder.run");
@@ -147,5 +146,9 @@ public class TreeBuilder extends Thread{
 
     public float getStatus() {
         return status;
+    }
+
+    public Node[][] getAdjacencyMatrixOfTree(){
+        return this.tree.convertTreeToAdjacencyMatrix();
     }
 }

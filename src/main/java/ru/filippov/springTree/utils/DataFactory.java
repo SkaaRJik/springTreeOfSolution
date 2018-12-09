@@ -27,6 +27,24 @@ public class DataFactory {
         return data;
     }
 
+    public static String readJson(File file, Charset cs) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fis, cs);
+        BufferedReader br = new BufferedReader(isr);
+
+
+        /*br.lines().forEach(s -> {
+            ArrayList<String> line = new ArrayList<>();
+            Collections.addAll(line, s.split(";"));
+            data.add(line);
+        });*/
+
+        String data = br.readLine();
+
+        br.close();
+        return data;
+    }
+
     public static Node[][] convertDataToNode(String[][] data){
         Node[][] nodes = new Node[data.length-1][data[0].length];
 
