@@ -25,10 +25,8 @@ public class AjaxController {
         String[][] table = DataFactory.readUsingFileReader(new File(uploadPath+"/"+fileName), StandardCharsets.UTF_8);
 
         //String result = "<button id='build'>Построить</button>";
-        String result = "<form action=\"/build?fileName="+fileName+"\">\n" +
-                "<input type=\"submit\" value=\"Построить\">\n" +
-                "</form>";
-        result += "<table>\n";
+        String result = "";
+        result += "<table class=\"container\">\n";
 
         for(String[] row : table){
             result+="\t<tr>\n";

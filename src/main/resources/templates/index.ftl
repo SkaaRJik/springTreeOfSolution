@@ -1,19 +1,23 @@
 <#import "parts/common.ftl" as c>
 
 <@c.page>
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <button type="submit">Добавить</button>
+    <form id="file-form" method="post" enctype="multipart/form-data" action="/upload">
+        <div class="file-uploader">
+            <label for="custom-file-upload" class="filupp">
+                <span class="filupp-file-name js-value">Загрузить файл</span>
+                <input type="file" name="attachment-file" value="1" id="custom-file-upload" accept=".text/csv">
+            </label>
+        </div>
     </form>
     <#if message??><div>${message}</div></#if>
-    <#if files??>
+    <#if files?has_content>
 
     <div id="table-list-files">
-        <table>
+        <table class="container">
             <caption><b>Список входных данных:</b></caption>
             <thead>
             <tr>
-                <th>Выбор</th> <th>Имя файла</th>
+                <th>Имя файла</th>
             </tr>
             </thead>
         <tbody>
@@ -22,44 +26,61 @@
 
 
     <#list files as file>
-        <tr><td><input type="radio" name="select-file" value="${file}"></td><td>${file}</td></tr>
+        <tr><td id="${file}" onClick="chooseFile(this)">${file}</td></tr>
     <#else>
             No files
     </#list>
-    <#if files??>
+    <#if files?has_content>
             </tbody>
         </table>
     </div>
-    <button id="buildTree">Построить!!!!</button>
+
     <div>
         <div id="readedFile"></div>
     </div>
     <script type="text/javascript">
+
+        var lastID;
+
+
         function readFileAjax(){
-            var radio = $('input[name=select-file]:checked').val();
+            var radio = lastID;
             $.ajax({
                 url: '/loadFile',
                 data: ({fileName : radio}),
                 success: function (data) {
+                    $("#table-list-files").append("<button id=\"buildTree\">Построить</button>")
                     $('#readedFile').html(data);
+                    $("#buildTree").click(function(){
+                        goToBuild();
+                    });
                 }
             });
         };
 
         function goToBuild(){
             var href = "/build?fileName="
-            href += $('input[name=select-file]:checked').val();
+            href += lastID;
             window.location.replace(href);
         };
 
         $(document).ready(function(){
-            $('input[name="select-file"]:radio').change(function(){
-                readFileAjax();
-            });
-            $("#buildTree").click(function(){
-                goToBuild();
+
+            $('input[type="file"]').change(function(){
+                //var myRe = new RegExp("[\w-]+\.csv");
+                var value = $("input[type='file']").val().match("[\\w-]+\\.csv");
+                $('.js-value').text(value);
+                $("#file-form").submit();
+
             });
         });
+
+        function chooseFile(cell) {
+            lastID = cell.id;
+            if(lastID) {
+                readFileAjax()
+            }
+        }
     </script>
 
 

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/style.css" type="text/css" media="screen"/>
     <script src='https://unpkg.com/nprogress@0.2.0/nprogress.js'></script>
     <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <script type="text/javascript" src="js/sigma/src/sigma.core.js"></script>
     <script type="text/javascript" src="js/sigma/src/conrad.js"></script>
     <script type="text/javascript" src="js/sigma/src/utils/sigma.utils.js"></script>

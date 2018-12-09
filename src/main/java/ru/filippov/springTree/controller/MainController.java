@@ -27,14 +27,14 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Map<String, Object> model) throws IOException {
-        Iterable<String> files = this.filesRepo.scan(this.uploadPath);
+        List<String> files = this.filesRepo.scan(this.uploadPath);
+
         model.put("files", files);
         return "index";
     }
 
-    @PostMapping("/")
-    public String upload(@RequestParam("file")MultipartFile file, Map<String, Object> model) throws IOException {
-        
+    @PostMapping("/upload")
+    public String upload(@RequestParam("attachment-file")MultipartFile file, Map<String, Object> model) throws IOException {
         if(file != null){
             File uploadDir = new File(this.uploadPath);
             if(!uploadDir.exists()){
