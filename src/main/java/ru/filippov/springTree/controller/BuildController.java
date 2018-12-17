@@ -27,9 +27,9 @@ public class BuildController {
     TreeBuilder treeBuilder;
 
     @GetMapping("")
-    public String buildFromFileTree(@RequestParam String fileName) throws IOException {
+    public String buildFromFileTree(@RequestParam String fileName, @RequestParam String responseVariable) throws IOException {
         String[][] data = DataFactory.readUsingFileReader(new File(this.uploadPath+"/"+fileName), StandardCharsets.UTF_8);
-        this.treeBuilder = new TreeBuilder(data);
+        this.treeBuilder = new TreeBuilder(data, responseVariable);
         this.treeBuilder.start();
         return "build";
     }

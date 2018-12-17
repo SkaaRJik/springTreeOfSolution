@@ -5,7 +5,7 @@
         <div class="file-uploader">
             <label for="custom-file-upload" class="filupp">
                 <span class="filupp-file-name js-value">Загрузить файл</span>
-                <input type="file" name="attachment-file" value="1" id="custom-file-upload" accept=".text/csv">
+                <input type="file" name="attachment-file" value="1" id="custom-file-upload" accept="text/csv">
             </label>
         </div>
     </form>
@@ -49,31 +49,19 @@
                 url: '/loadFile',
                 data: ({fileName : radio}),
                 success: function (data) {
-                    $("#table-list-files").append("<button id=\"buildTree\">Построить</button>")
                     $('#readedFile').html(data);
-                    $("#buildTree").click(function(){
-                        goToBuild();
-                    });
                 }
             });
         };
 
-        function goToBuild(){
+
+
+        function goToBuild(row){
             var href = "/build?fileName="
             href += lastID;
+            href += "&responseVariable="+row.className;
             window.location.replace(href);
         };
-
-        $(document).ready(function(){
-
-            $('input[type="file"]').change(function(){
-                //var myRe = new RegExp("[\w-]+\.csv");
-                var value = $("input[type='file']").val().match("[\\w-]+\\.csv");
-                $('.js-value').text(value);
-                $("#file-form").submit();
-
-            });
-        });
 
         function chooseFile(cell) {
             lastID = cell.id;
@@ -85,6 +73,16 @@
 
 
     </#if>
+<script>
+    $(document).ready(function(){
 
+            $('input[type="file"]').change(function(){
+                //var myRe = new RegExp("[\w-]+\.csv");
+                var value = $("input[type='file']").val().match("[\\w-]+\\.csv");
+                $('.js-value').text(value);
+                $("#file-form").submit();
+            });
+        });
+</script>
 </@c.page>
 

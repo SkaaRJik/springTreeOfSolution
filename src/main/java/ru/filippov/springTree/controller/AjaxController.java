@@ -28,10 +28,17 @@ public class AjaxController {
         String result = "";
         result += "<table class=\"container\">\n";
 
-        for(String[] row : table){
+        result+="\t<tr>\n";
+        for(int j = 0 ; j < table[0].length; j++){
+            result =  result + "<th class = \""+ table[0][j] +"\" onClick=\"goToBuild(this)\">" + table[0][j] + "</th>";
+        }
+        result+="\t</tr>\n";
+
+
+        for(int i = 1 ; i < table.length; i++){
             result+="\t<tr>\n";
-            for(String column : row){
-                result =  result + "<td>" + column + "</td>";
+            for(int j = 0 ; j < table[i].length; j++){
+                result =  result + "<td class = \""+ table[0][j] +"\" onClick=\"goToBuild(this)\">" + table[i][j] + "</td>";
             }
             result+="\t</tr>\n";
 

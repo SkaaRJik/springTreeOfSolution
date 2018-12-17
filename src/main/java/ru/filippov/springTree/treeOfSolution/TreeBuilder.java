@@ -18,12 +18,14 @@ public class TreeBuilder extends Thread{
     Node tree;
     String[][] data;
     private float statusIncrementor = -1;
+    private String responseVariable;
 
     public TreeBuilder() {
         this.tree = null;
     }
-    public TreeBuilder(String[][] data) {
+    public TreeBuilder(String[][] data, String responseVariable) {
         this.data = data;
+        this.responseVariable = responseVariable;
         statusIncrementor = 100.0f / ((this.data[0].length * (this.data[0].length-1) + calculateFactorial(this.data[0].length-2)));
         this.tree = null;
     }
@@ -49,20 +51,29 @@ public class TreeBuilder extends Thread{
     public void run() {
         Node[][] nodes = DataFactory.convertDataToNode(data);
         short countOfAttributes = (short) data[0].length;
-        int countOfTrees = countOfAttributes * (countOfAttributes - 1);
+        int countOfTrees = (countOfAttributes) * (countOfAttributes - 1);
         //if(tree == null) tree = nodes[0][3];
         Node currentTree = null;
+        short indexOfResponseVariable = 0;
         short firstIndex = 0;
         short secondIndex = 1;
         short bestColumn1 = -1;
         short bestColumn2 = -1;
         try {
             for (int k = 0; k < countOfTrees; k++) {
+
                 if (secondIndex >= countOfAttributes) {
                     secondIndex = 0;
                     firstIndex++;
                 }
-
+                if(nodes[0][firstIndex].getAttributeName().equals(this.responseVariable)) {
+                    indexOfResponseVariable = firstIndex;
+                    currentTree = null;
+                    secondIndex++;
+                    if (firstIndex == secondIndex) secondIndex++;
+                    updateStatus();
+                    continue;
+                }
                 for (int i = 0; i < nodes.length; i++) {
                     if (currentTree == null) currentTree = (Node) nodes[i][firstIndex].clone();
                     currentTree.push(nodes[i][firstIndex]);
@@ -92,9 +103,11 @@ public class TreeBuilder extends Thread{
                 updateStatus();
 
             }
-            List<Short> allowedColumns = new ArrayList<>(nodes[0].length);
+
+
+            List<Short> allowedColumns = new ArrayList<>(nodes[0].length-1);
             for (short i = 0; i < countOfAttributes; i++) {
-                if(i == bestColumn1 || i == bestColumn2) continue;
+                if(i == bestColumn1 || i == bestColumn2 || i == indexOfResponseVariable) continue;
                 allowedColumns.add(i);
             }
 
@@ -113,7 +126,6 @@ public class TreeBuilder extends Thread{
                 for (Short column: allowedColumns) {
                     for (int i = 0; i < nodes.length; i++) {
                         currentTree.push(nodes[i][column]);
-
                     }
                     updateStatus();
                     if(secondStage) {
@@ -135,6 +147,9 @@ public class TreeBuilder extends Thread{
                     currentTree.deleteLastLevel(nodes[0][column].getAttributeName());
                 }
                 allowedColumns.remove(new Short(bestColumn2));
+            }
+            for (int i = 0; i < nodes.length; i++) {
+                currentTree.push(nodes[i][indexOfResponseVariable]);
             }
             this.status = 100;
         } catch(CloneNotSupportedException ex){
